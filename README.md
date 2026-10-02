@@ -1,4 +1,4 @@
-# SANJEEVAANI VISHWAS
+# SANJIEVANI VISHWAS
 ### AI-Based Forecast Bust Detection for Medium-Range Weather Forecasts
 **Smart India Hackathon (SIH) 2026 — Problem Statement: SIH26079 | Theme: Smart Automation**
 
