@@ -1,0 +1,31 @@
+module.exports = {
+    'Arunachal Pradesh': [
+        'Anjaw',
+        'Bichom',
+        'Changlang',
+        'Dibang Valley',
+        'East Kameng',
+        'East Siang',
+        'Kamle',
+        'Keyi Panyor',
+        'Kra Daadi',
+        'Kurung Kumey',
+        'Longding',
+        'Lohit',
+        'Lower Dibang Valley',
+        'Lower Siang',
+        'Lower Subansiri',
+        'Lepa Rada',
+        'Namsai',
+        'Pakke-Kessang',
+        'Papum Pare',
+        'Shi Yomi',
+        'Siang',
+        'Tawang',
+        'Tirap',
+        'Upper Siang',
+        'Upper Subansiri',
+        'West Kameng',
+        'West Siang'
+    ]
+};

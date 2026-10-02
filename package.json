@@ -1,0 +1,13 @@
+{
+    "name": "sih079-forecast-bust-dashboard",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "start": "node server.js",
+        "dev": "node --watch server.js"
+    },
+    "dependencies": {
+        "@svg-maps/india": "^2.0.0",
+        "express": "^4.19.2"
+    }
+}

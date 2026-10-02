@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Viswas | Forecast Bust Detection</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+</head>
+
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="brand-box">
+                <div class="brand-mark">V</div>
+                <div>
+                    <h1>Vishwas</h1>
+                    <span>Smarter Forecasts. Safer Decisions.</span>
+                </div>
+            </div>
+
+            <nav class="nav">
+                <button class="nav-item active" data-page="overview"><span class="nav-icon">⌂</span> Overview</button>
+                <button class="nav-item" data-page="map"><span class="nav-icon">🗺</span> Forecast Map</button>
+                <button class="nav-item" data-page="region"><span class="nav-icon">◉</span> Region Analysis</button>
+                <button class="nav-item" data-page="forecast"><span class="nav-icon">🗓</span> 10-Day Forecast</button>
+                <button class="nav-item" data-page="variables"><span class="nav-icon">◌</span> Weather
+                    Variables</button>
+                <button class="nav-item" data-page="analysis"><span class="nav-icon">▣</span> Error Analysis</button>
+                <button class="nav-item" data-page="explainability"><span class="nav-icon">✦</span> AI
+                    Explainability</button>
+                <button class="nav-item" data-page="alerts"><span class="nav-icon">⚑</span> Alerts</button>
+                <button class="nav-item" data-page="history"><span class="nav-icon">◔</span> Historical Data</button>
+                <button class="nav-item" data-page="system"><span class="nav-icon">⚙</span> System</button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="bubble"></div>
+                <div>
+                    <strong>Better Insights</strong>
+                    <small>for a Safer Tomorrow</small>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-panel">
+            <header class="topbar">
+                <div class="title-block">
+                    <h2 id="pageTitle">Forecast Map</h2>
+                    <p id="pageSubtitle">Explore forecast confidence and bust probability across Indian regions</p>
+                </div>
+                <div class="header-right">
+                    <div class="weather-provider-status" id="weatherProviderStatus">Weather feed · Checking</div>
+                    <div class="header-area-control">
+                        <label for="headerRegionSelect">Area</label>
+                        <select id="headerRegionSelect" aria-label="Dashboard area"></select>
+                    </div>
+                    <div class="top-meta" id="currentDate">Loading date</div>
+                    <div class="top-meta" id="currentTime">--:-- IST</div>
+                    <div class="user-pill">GU</div>
+                </div>
+            </header>
+
+            <div class="context-bar">
+                <div class="context-slot"><span class="context-label">Region</span><strong id="contextRegion">Madhya
+                        Pradesh</strong></div>
+                <div class="context-slot"><span class="context-label">Day</span><strong id="contextDay">Day 1</strong>
+                </div>
+                <div class="context-slot"><span class="context-label">Variable</span><strong
+                        id="contextVariable">Rainfall</strong></div>
+                <div class="context-slot"><span class="context-label">Cycle</span><strong id="contextCycle">00
+                        UTC</strong></div>
+            </div>
+
+            <div class="command-bar">
+                <div class="command-input-wrap">
+                    <span class="command-icon">⌕</span>
+                    <input id="aiCommandInput" type="text"
+                        placeholder="Ask the AI to focus on a region, day, variable, or event..." />
+                    <button id="runCommandBtn">Apply</button>
+                </div>
+                <div class="command-chips">
+                    <button class="chip">Show Madhya Pradesh</button>
+                    <button class="chip">Show high-risk regions on Day 5</button>
+                    <button class="chip">Why is confidence low in Kerala?</button>
+                    <button class="chip">Show heavy rainfall events</button>
+                </div>
+            </div>
+
+            <div id="pageContent">
+                <section class="page active" id="overviewPage">
+                    <div class="overview-map-layout">
+                        <div class="panel overview-map-panel">
+                            <div class="panel-header">
+                                <div>
+                                    <h3>India forecast risk</h3>
+                                    <small>Day 1 · Rainfall · Model-estimated bust probability</small>
+                                </div>
+                                <button class="small-action" id="openForecastMap">Open forecast map</button>
+                            </div>
+                            <svg id="overviewIndiaMap" viewBox="0 0 612 696" aria-label="India forecast risk map">
+                                <g id="overviewMapLayer"></g>
+                            </svg>
+                            <div class="legend-row">
+                                <span class="legend-item low">Low</span>
+                                <span class="legend-item moderate">Moderate</span>
+                                <span class="legend-item high">High</span>
+                                <span class="legend-item vhigh">Very High</span>
+                            </div>
+                        </div>
+                        <aside class="panel overview-risk-panel">
+                            <div class="panel-header">
+                                <div>
+                                    <h3>Regions to review</h3>
+                                    <small>Highest model-estimated bust probability</small>
+                                </div>
+                            </div>
+                            <div id="highRiskRegionList" class="overview-risk-list"></div>
+                        </aside>
+                    </div>
+
+                    <div class="stats-row">
+                        <div class="metric-card">
+                            <span class="metric-label">High-risk regions</span>
+                            <strong id="highRiskCount">7</strong>
+                            <small>Model-estimated across India</small>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-label">Mean model confidence</span>
+                            <strong id="overallConfidence">61%</strong>
+                            <small>Lead-time weighted</small>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-label">Bhopal temperature</span>
+                            <strong id="overviewTemperature">Loading</strong>
+                            <small id="overviewWeatherCondition">Waiting for WeatherAPI</small>
+                        </div>
+                    </div>
+
+                    <div class="overview-grid">
+                        <div class="panel panel-large">
+                            <div class="panel-header">
+                                <h3>Major forecast-bust alerts</h3>
+                                <button class="small-action">View all</button>
+                            </div>
+                            <div id="alertCards" class="alert-list"></div>
+                        </div>
+
+                        <div class="panel panel-medium">
+                            <div class="panel-header">
+                                <h3 id="overviewWeatherTitle">Latest observation</h3>
+                            </div>
+                            <div class="overview-observation" id="overviewWeatherDetails">
+                                <p>Live conditions load from the server-side WeatherAPI connection.</p>
+                            </div>
+                            <a class="weather-credit" href="https://www.weatherapi.com/" target="_blank"
+                                rel="noopener">Weather data by WeatherAPI.com</a>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="page" id="mapPage">
+                    <div class="map-layout">
+                        <div class="map-panel panel">
+                            <div class="map-toolbar">
+                                <div class="toolbar-group">
+                                    <label>Variable</label>
+                                    <select id="variableSelect">
+                                        <option>Rainfall</option>
+                                        <option>Temperature</option>
+                                        <option>Wind speed</option>
+                                        <option>Wind direction</option>
+                                        <option>Pressure</option>
+                                        <option>Humidity</option>
+                                        <option>Geopotential height</option>
+                                    </select>
+                                </div>
+                                <div class="toolbar-group">
+                                    <label>Metric</label>
+                                    <select id="metricSelect">
+                                        <option>Bust Probability</option>
+                                        <option>Expected Error</option>
+                                        <option>Confidence</option>
+                                    </select>
+                                </div>
+                                <div class="toolbar-group">
+                                    <label>Lead Time</label>
+                                    <select id="leadSelect">
+                                        <option>Day 1</option>
+                                        <option selected>Day 2</option>
+                                        <option>Day 3</option>
+                                        <option>Day 4</option>
+                                        <option>Day 5</option>
+                                        <option>Day 6</option>
+                                        <option>Day 7</option>
+                                        <option>Day 8</option>
+                                        <option>Day 9</option>
+                                        <option>Day 10</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="india-map-wrap">
+                                <svg id="indiaMap" viewBox="0 0 612 696" aria-label="India forecast map">
+                                    <g id="mapRegionLayer"></g>
+                                </svg>
+                                <button id="backToIndiaBtn" class="back-btn hidden">Back to India</button>
+                            </div>
+
+                            <div class="legend-row">
+                                <span class="legend-item low">Low</span>
+                                <span class="legend-item moderate">Moderate</span>
+                                <span class="legend-item high">High</span>
+                                <span class="legend-item vhigh">Very High</span>
+                            </div>
+                            <small class="map-credit">State boundaries: MapSVG, CC BY 4.0</small>
+                        </div>
+
+                        <aside class="info-panel panel">
+                            <div class="panel-header compact">
+                                <h3 id="selectedRegionName">Madhya Pradesh</h3>
+                                <span class="risk-pill high" id="selectedRiskBadge">High Risk</span>
+                            </div>
+
+                            <div class="mini-stat-grid">
+                                <div class="mini-stat">
+                                    <label>Bust Probability</label>
+                                    <strong id="regionBustProbability">76%</strong>
+                                </div>
+                                <div class="mini-stat">
+                                    <label>Expected Error</label>
+                                    <strong id="regionExpectedError">58 mm</strong>
+                                </div>
+                                <div class="mini-stat">
+                                    <label>Confidence</label>
+                                    <strong id="regionConfidence">24%</strong>
+                                </div>
+                            </div>
+
+                            <div class="summary-table">
+                                <div class="summary-row headers">
+                                    <span>Day</span>
+                                    <span>Forecast</span>
+                                    <span>Expected Error</span>
+                                    <span>Bust Probability</span>
+                                    <span>Confidence</span>
+                                </div>
+                                <div id="summaryRows"></div>
+                            </div>
+
+                            <div class="outlook-panel">
+                                <div class="outlook-heading">
+                                    <strong>10-day bust outlook</strong>
+                                    <small>Select a lead day</small>
+                                </div>
+                                <div id="leadOutlook" class="lead-outlook"></div>
+                            </div>
+
+                            <div class="callout-box">
+                                <h4>Why this region risky?</h4>
+                                <ul id="reasonList"></ul>
+                            </div>
+
+                            <section class="map-district-panel hidden" id="mapDistrictPanel">
+                                <div class="outlook-heading">
+                                    <strong id="mapDistrictTitle">Districts</strong>
+                                    <small id="mapDistrictCount"></small>
+                                </div>
+                                <p id="mapDistrictNote">Choose a district for local weather.</p>
+                                <div class="district-list" id="mapDistrictList"></div>
+                            </section>
+                        </aside>
+                    </div>
+
+                    <section class="weather-strip" id="weatherStrip" aria-label="Current weather variables"></section>
+                </section>
+
+                <section class="page" id="regionPage">
+                    <div class="panel region-toolbar">
+                        <div>
+                            <h3>Regional forecast analysis</h3>
+                            <small>Live regional weather with lead-time model estimates</small>
+                        </div>
+                        <div class="region-controls">
+                            <select id="regionSelect" aria-label="Select region"></select>
+                            <select id="regionVariableSelect" aria-label="Select weather variable">
+                                <option>Rainfall</option>
+                                <option>Temperature</option>
+                                <option>Wind speed</option>
+                                <option>Wind direction</option>
+                                <option>Pressure</option>
+                                <option>Humidity</option>
+                                <option>Geopotential height</option>
+                            </select>
+                            <button class="small-action" id="openRegionMap" type="button">View on map</button>
+                        </div>
+                    </div>
+
+                    <section class="panel district-panel hidden" id="districtPanel">
+                        <div class="panel-header">
+                            <div>
+                                <h3 id="districtPanelTitle">Districts</h3>
+                                <small id="districtPanelNote">Select a district for local weather outlook</small>
+                            </div>
+                            <span class="provider-label" id="districtCount"></span>
+                        </div>
+                        <div class="district-list" id="districtList"></div>
+                    </section>
+
+                    <div class="region-grid">
+                        <div class="panel panel-wide">
+                            <div class="panel-header">
+                                <div>
+                                    <h3 id="regionSnapshotTitle">Madhya Pradesh · Day 1</h3>
+                                    <small>Selected lead-time summary</small>
+                                </div>
+                            </div>
+                            <div id="regionSummaryCards" class="summary-cards"></div>
+                        </div>
+                        <div class="panel panel-medium">
+                            <div class="panel-header">
+                                <h3>Current conditions</h3>
+                            </div>
+                            <div id="currentConditions" class="conditions-list"></div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-full region-days-panel">
+                        <div class="panel-header">
+                            <div>
+                                <h3>Day 1–10 Forecast</h3>
+                                <small>Choose a day to update the regional summary and error chart</small>
+                            </div>
+                            <span class="provider-label">Live weather + model estimates</span>
+                        </div>
+                        <div class="region-table-scroll">
+                            <table class="region-forecast-table">
+                                <thead>
+                                    <tr>
+                                        <th>Lead</th>
+                                        <th>Forecast</th>
+                                        <th>Predicted Error</th>
+                                        <th>Bust Probability</th>
+                                        <th>Confidence</th>
+                                        <th>Risk</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="regionForecastRows"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-full">
+                        <div class="panel-header">
+                            <div>
+                                <h3 id="errorChartTitle">Forecast Error Analysis</h3>
+                                <small id="errorChartDescription">Regional forecast vs model-predicted error by lead
+                                    day</small>
+                            </div>
+                            <span class="selected-lead-label" id="errorSelectedDay">Day 1 selected</span>
+                        </div>
+                        <div class="error-chart-legend" id="errorChartLegend"></div>
+                        <div id="errorChart" class="error-chart"></div>
+                    </div>
+                </section>
+
+                <section class="page" id="forecastPage">
+                    <div class="forecast-region-control">
+                        <label for="forecastRegionSelect">Forecast region</label>
+                        <select id="forecastRegionSelect" aria-label="Forecast region"></select>
+                        <span id="forecastRegionLocation">Select an Indian region</span>
+                    </div>
+                    <div class="forecast-day-nav" id="forecastDayTabs" role="tablist" aria-label="Forecast days"></div>
+
+                    <div class="forecast-feature-grid">
+                        <section class="panel forecast-outlook-panel">
+                            <div class="forecast-section-title">
+                                <h3>Weather Outlook</h3>
+                                <span id="forecastSelectedDate"></span>
+                            </div>
+                            <div id="forecastOutlook"></div>
+                        </section>
+
+                        <section class="panel forecast-information-panel">
+                            <h3>Information</h3>
+                            <dl id="forecastInformation" class="forecast-information"></dl>
+                        </section>
+                    </div>
+
+                    <section class="panel panel-full forecast-table-panel">
+                        <div class="panel-header">
+                            <div>
+                                <h3>10-Day Weather Forecast</h3>
+                                <small>Daily conditions for the selected region</small>
+                            </div>
+                            <span class="provider-label">WeatherAPI.com</span>
+                        </div>
+                        <div id="forecastTimeline" class="forecast-table-scroll"></div>
+                        <p class="forecast-source-note">Observed and forecast weather is provided by WeatherAPI.com.
+                            Bust probability is a separate illustrative model estimate.</p>
+                    </section>
+                </section>
+
+                <section class="page" id="variablesPage">
+                    <div class="panel panel-full">
+                        <div class="panel-header">
+                            <h3>Weather variables</h3>
+                        </div>
+                        <div id="variableCards" class="variable-grid"></div>
+                    </div>
+                </section>
+
+                <section class="page" id="analysisPage">
+                    <div class="panel panel-full">
+                        <div class="panel-header">
+                            <h3>Forecast error diagnostics</h3>
+                        </div>
+                        <div id="diagnosticMetrics" class="diagnostic-grid"></div>
+                    </div>
+                </section>
+
+                <section class="page" id="explainabilityPage">
+                    <div class="panel panel-full">
+                        <div class="panel-header">
+                            <h3>AI explainability</h3>
+                        </div>
+                        <div id="explainabilityBlock" class="explainability-block"></div>
+                    </div>
+                </section>
+
+                <section class="page" id="alertsPage">
+                    <div class="panel panel-full">
+                        <div class="panel-header">
+                            <h3 id="alertsHeading">Operational alerts</h3>
+                        </div>
+                        <div id="alertsList" class="alerts-list"></div>
+                    </div>
+                </section>
+
+                <section class="page" id="historyPage">
+                    <div class="panel panel-full">
+                        <div class="panel-header">
+                            <div>
+                                <h3>Observed weather history</h3>
+                                <small>Hourly observations for the selected regional capital</small>
+                            </div>
+                            <div class="history-controls">
+                                <select id="historyRegionSelect" aria-label="History region"></select>
+                                <input id="historyDate" type="date" aria-label="History date" />
+                                <button class="small-action" id="loadHistoryButton">Load observations</button>
+                            </div>
+                        </div>
+                        <p class="history-message" id="weatherHistoryMessage">Choose a region and past date.</p>
+                        <div id="weatherHistorySummary" class="history-summary"></div>
+                        <div class="history-table-wrap">
+                            <table class="history-weather-table">
+                                <thead>
+                                    <tr>
+                                        <th>Local time</th>
+                                        <th>Temperature</th>
+                                        <th>Rainfall</th>
+                                        <th>Wind</th>
+                                        <th>Direction</th>
+                                        <th>Pressure</th>
+                                        <th>Humidity</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="weatherHistoryRows"></tbody>
+                            </table>
+                        </div>
+                        <a class="weather-credit" href="https://www.weatherapi.com/" target="_blank"
+                            rel="noopener">Historical weather data by WeatherAPI.com</a>
+                    </div>
+
+                    <div class="panel panel-full history-events-panel">
+                        <div class="panel-header">
+                            <div>
+                                <h3 id="historyArchiveHeading">Forecast-bust case archive</h3>
+                                <small>Illustrative model cases; validated NWP-versus-observation records are not
+                                    connected yet.</small>
+                            </div>
+                            <div class="control-row">
+                                <select id="eventTypeFilter">
+                                    <option value="all">All event types</option>
+                                    <option>Monsoon Depression</option>
+                                    <option>Heavy Rainfall Event</option>
+                                    <option>Western Disturbance</option>
+                                    <option>Cyclone</option>
+                                    <option>Heat Wave</option>
+                                    <option>Active/Break Monsoon Phase</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="historyList" class="history-list"></div>
+                    </div>
+                </section>
+
+                <section class="page" id="systemPage">
+                    <div class="system-grid">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h3>System status</h3>
+                            </div>
+                            <div id="systemStatus" class="status-list"></div>
+                        </div>
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h3>Prototype API endpoints</h3>
+                            </div>
+                            <div id="apiList" class="api-list"></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="/app.js"></script>
+</body>
+
+</html>
